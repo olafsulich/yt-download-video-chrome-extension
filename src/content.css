@@ -1,0 +1,145 @@
+/*
+ * Mirrors YouTube's watch-page icon buttons ("Share", "Save"): 40px circle, 8px apart;
+ * light: rgba(0,0,0,.05) -> .1 on hover, #0f0f0f icon; dark: rgba(255,255,255,.1) -> .2, #f1f1f1.
+ * A ring around the edge shows download progress.
+ */
+
+.ytvid-watch-btn {
+  all: unset;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-left: 8px;
+  vertical-align: top;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.05);
+  color: #0f0f0f;
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: background-color 0.1s ease-out;
+  flex: none;
+  --ring: #065fd4;
+}
+
+.ytvid-watch-btn:hover {
+  background: rgba(0, 0, 0, 0.1);
+}
+
+html[dark] .ytvid-watch-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: #f1f1f1;
+  --ring: #3ea6ff;
+}
+html[dark] .ytvid-watch-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.ytvid-watch-btn:focus-visible {
+  outline: 2px solid #3ea6ff;
+  outline-offset: 2px;
+}
+
+.ytvid-icon,
+.ytvid-icon-hover {
+  display: flex;
+  width: 24px;
+  height: 24px;
+  pointer-events: none;
+}
+.ytvid-icon-hover:empty {
+  display: none;
+}
+
+/* While downloading, hovering swaps the arrow for a stop icon (click cancels). */
+.ytvid-btn[data-state="busy"] .ytvid-icon-hover {
+  display: none;
+}
+.ytvid-btn[data-state="busy"]:hover .ytvid-icon,
+.ytvid-btn[data-state="busy"]:focus-visible .ytvid-icon {
+  display: none;
+}
+.ytvid-btn[data-state="busy"]:hover .ytvid-icon-hover,
+.ytvid-btn[data-state="busy"]:focus-visible .ytvid-icon-hover {
+  display: flex;
+}
+
+.ytvid-btn[data-state="done"],
+html[dark] .ytvid-btn[data-state="done"] {
+  color: var(--ring);
+}
+.ytvid-btn[data-state="error"] {
+  color: #cc0000;
+}
+html[dark] .ytvid-btn[data-state="error"] {
+  color: #ff6b6b;
+}
+
+/* ---- Progress ring ---- */
+.ytvid-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.15s ease-out;
+}
+.ytvid-ring circle {
+  fill: none;
+  stroke-width: 3;
+}
+.ytvid-ring .track {
+  stroke: currentColor;
+  opacity: 0.12;
+}
+.ytvid-ring .bar {
+  stroke: var(--ring);
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 100;
+  stroke-dashoffset: calc(100 - var(--p, 0));
+  transition: stroke-dashoffset 0.3s ease-out;
+}
+.ytvid-btn[data-state="busy"] .ytvid-ring {
+  opacity: 1;
+}
+/* Before the first byte arrives: a short arc that spins. */
+.ytvid-btn[data-state="busy"][style*="--p: 0"] .ytvid-ring {
+  animation: ytvid-spin 1s linear infinite;
+}
+.ytvid-btn[data-state="busy"][style*="--p: 0"] .ytvid-ring .bar {
+  stroke-dashoffset: 75;
+}
+
+@keyframes ytvid-spin {
+  from { transform: rotate(-90deg); }
+  to { transform: rotate(270deg); }
+}
+
+/* ---- Shorts action bar: same size as Like / Dislike / Share ---- */
+.ytvid-shorts-action {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.ytvid-shorts-btn {
+  width: 48px;
+  height: 48px;
+  margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ytvid-watch-btn,
+  .ytvid-ring,
+  .ytvid-ring .bar {
+    transition: none;
+  }
+  .ytvid-btn[data-state="busy"][style*="--p: 0"] .ytvid-ring {
+    animation: none;
+  }
+}

@@ -1,0 +1,5 @@
+.DS_Store
+*.zip
+*.pem
+host/run-host.sh
+test-output/
